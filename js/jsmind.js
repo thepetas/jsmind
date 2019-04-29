@@ -2319,6 +2319,14 @@
         add_node: function (node) {
             this.create_node_element(node, this.e_nodes);
             this.init_nodes_size(node);
+
+            // TODO: 29.04.2019 Event's parameters
+            const event = new CustomEvent('addNode', {
+                detail: {
+                    node: node
+                }
+            });
+            this.container.dispatchEvent(event);
         },
 
         create_node_element: function (node, parent_node) {
@@ -2377,6 +2385,14 @@
                 node._data.view.element = null;
                 node._data.view.expander = null;
             }
+
+            // TODO: 29.04.2019 Event's parameters
+            const event = new CustomEvent('removeNode', {
+                detail: {
+                    node: node
+                }
+            });
+            this.container.dispatchEvent(event);
         },
 
         update_node: function (node) {
@@ -2391,6 +2407,14 @@
             }
             view_data.width = element.clientWidth;
             view_data.height = element.clientHeight;
+
+            // TODO: 29.04.2019 Event's parameters
+            const event = new CustomEvent('updateNode', {
+                detail: {
+                    node: node
+                }
+            });
+            this.container.dispatchEvent(event);
         },
 
         select_node: function (node) {
@@ -2403,6 +2427,14 @@
                 this.selected_node = node;
                 node._data.view.element.className += ' selected';
                 this.clear_node_custom_style(node);
+
+                // TODO: 29.04.2019 Event's parameters
+                const event = new CustomEvent('selectNode', {
+                    detail: {
+                        node: node
+                    }
+                });
+                this.container.dispatchEvent(event);
             }
         },
 

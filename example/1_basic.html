@@ -29,18 +29,18 @@
             },
             "format":"node_array",
             "data":[
-                {"id":"root", "isroot":true, "topic":"jsMind"},
+                {"id":"root", "isroot":true, "topic":"jsMind", enabled: false},
 
-                {"id":"sub1", "parentid":"root", "topic":"sub1", "background-color":"#0000ff"},
+                {"id":"sub1", "parentid":"root", "topic":"sub1", "background-color":"#0000ff", enabled: false},
                 {"id":"sub11", "parentid":"sub1", "topic":"sub11"},
                 {"id":"sub12", "parentid":"sub1", "topic":"sub12"},
                 {"id":"sub13", "parentid":"sub1", "topic":"sub13"},
 
-                {"id":"sub2", "parentid":"root", "topic":"sub2"},
+                {"id":"sub2", "parentid":"root", "topic":"sub2", enabled: false},
                 {"id":"sub21", "parentid":"sub2", "topic":"sub21"},
                 {"id":"sub22", "parentid":"sub2", "topic":"sub22","foreground-color":"#33ff33"},
 
-                {"id":"sub3", "parentid":"root", "topic":"sub3"},
+                {"id":"sub3", "parentid":"root", "topic":"sub3", enabled: false},
             ]
         };
         var options = {
@@ -49,14 +49,41 @@
             theme:'primary'
         }
         var jm = jsMind.show(options,mind);
-        // jm.set_readonly(true);
-        // var mind_data = jm.get_data();
-        // alert(mind_data);
-        jm.add_node("sub2","sub23", "new node", {"background-color":"red"});
-        jm.set_node_color('sub21', 'green', '#ccc');
+        // jm.add_node("sub2","sub23", "new node", {"background-color":"red"});
+        // jm.set_node_color('sub21', 'green', '#ccc');
+
+        return jm;
     }
 
-    load_jsmind();
+    const jm = load_jsmind();
+
+    const container = document.getElementById("jsmind_container");
+    container.addEventListener('addNode', function (event) {
+      console.log("Add node it!");
+      console.log(event.detail);
+    });
+
+    container.addEventListener('editNode', function (event) {
+      console.log("Edit node!");
+      console.log(event.detail);
+    });
+
+    container.addEventListener('removeNode', function (event) {
+      console.log("Remove node!");
+      console.log(event.detail);
+    });
+
+    container.addEventListener('selectNode', function (event) {
+      console.log("Select node!");
+      console.log(event.detail);
+    });
+
+    container.addEventListener('updateNode', function (event) {
+      console.log("Update node!");
+      console.log(event.detail);
+    });
+
+
 </script>
 </body>
 </html>
