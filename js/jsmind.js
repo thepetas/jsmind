@@ -113,7 +113,8 @@
     jm.direction = { left: -1, center: 0, right: 1 };
     jm.event_type = { show: 1, resize: 2, edit: 3, select: 4 };
 
-    jm.node = function (sId, iIndex, sTopic, oData, bIsRoot, oParent, eDirection, bExpanded) {
+    // TODO: 30.04.2019 Added enabled
+    jm.node = function (sId, iIndex, sTopic, oData, bIsRoot, oParent, eDirection, bExpanded, sEnabled) {
         if (!sId) { logger.error('invalid nodeid'); return; }
         if (typeof iIndex != 'number') { logger.error('invalid node index'); return; }
         if (typeof bExpanded === 'undefined') { bExpanded = true; }
@@ -125,6 +126,7 @@
         this.parent = oParent;
         this.direction = eDirection;
         this.expanded = !!bExpanded;
+        this.enabled = sEnabled;
         this.children = [];
         this._data = {};
     };
@@ -208,21 +210,22 @@
 
         set_root: function (nodeid, topic, data) {
             if (this.root == null) {
-                this.root = new jm.node(nodeid, 0, topic, data, true);
+                this.root = new jm.node(nodeid, 0, topic, data, true, null, null, true, false);
                 this._put_node(this.root);
             } else {
                 logger.error('root node is already exist');
             }
         },
 
-        add_node: function (parent_node, nodeid, topic, data, idx, direction, expanded) {
+        // TODO: 30.04.2019 Added enabled
+        add_node: function (parent_node, nodeid, topic, data, idx = null, direction = null, expanded = true, enabled = true) {
             if (!jm.util.is_node(parent_node)) {
                 var the_parent_node = this.get_node(parent_node);
                 if (!the_parent_node) {
                     logger.error('the parent_node[id=' + parent_node + '] can not be found.');
                     return null;
                 } else {
-                    return this.add_node(the_parent_node, nodeid, topic, data, idx, direction, expanded);
+                    return this.add_node(the_parent_node, nodeid, topic, data, idx, direction, expanded, enabled);
                 }
             }
             var nodeindex = idx || -1;
@@ -238,9 +241,9 @@
                 } else {
                     d = (direction != jm.direction.left) ? jm.direction.right : jm.direction.left;
                 }
-                node = new jm.node(nodeid, nodeindex, topic, data, false, parent_node, d, expanded);
+                node = new jm.node(nodeid, nodeindex, topic, data, false, parent_node, d, expanded, enabled);
             } else {
-                node = new jm.node(nodeid, nodeindex, topic, data, false, parent_node, parent_node.direction, expanded);
+                node = new jm.node(nodeid, nodeindex, topic, data, false, parent_node, parent_node.direction, expanded, enabled);
             }
             if (this._put_node(node)) {
                 parent_node.children.push(node);
@@ -647,7 +650,8 @@
                         if (!!node_direction) {
                             d = node_direction == 'left' ? jm.direction.left : jm.direction.right;
                         }
-                        mind.add_node(parentid, node_json.id, node_json.topic, data, null, d, node_json.expanded);
+                        const isEnabled = (node_json.enabled === undefined || node_json.enabled);
+                        mind.add_node(parentid, node_json.id, node_json.topic, data, null, d, node_json.expanded, isEnabled);
                         node_array.splice(i, 1);
                         extract_count++;
                         var sub_extract_count = df._extract_subnode(mind, node_json.id, node_array);
@@ -664,11 +668,12 @@
             _extract_data: function (node_json) {
                 var data = {};
                 for (var k in node_json) {
-                    if (k == 'id' || k == 'topic' || k == 'parentid' || k == 'isroot' || k == 'direction' || k == 'expanded') {
+                    if (k == 'id' || k == 'topic' || k == 'parentid' || k == 'isroot' || k == 'direction' || k == 'expanded' || k == 'enabled') {
                         continue;
                     }
                     data[k] = node_json[k];
                 }
+
                 return data;
             },
 
@@ -1074,6 +1079,11 @@
                 if (!s) { return true; }
                 return s.replace(/\s*/, '').length == 0;
             }
+        }, nodes: {
+            node_indexes: function(node) {
+                // var indexes = [node.index]
+
+            }
         }
     };
 
@@ -1335,7 +1345,7 @@
             return this.mind.get_node(nodeid);
         },
 
-        add_node: function (parent_node, nodeid, topic, data) {
+        add_node: function (parent_node, nodeid, topic, data, enabled) {
             if (this.get_editable()) {
                 var node = this.mind.add_node(parent_node, nodeid, topic, data);
                 if (!!node) {
@@ -2793,9 +2803,12 @@
 
         handle_addchild: function (_jm, e) {
             var selected_node = _jm.get_selected_node();
-            if (!!selected_node) {
+            if (!!selected_node && !selected_node.isroot) {  // not allow to create a child at leve2
                 var nodeid = jm.util.uuid.newid();
-                var node = _jm.add_node(selected_node, nodeid, 'New Node');
+                // TODO: 30.04.2019 Fix this unused parameters
+                console.log("start add_node");
+                var node = _jm.add_node(selected_node, nodeid, 'New Node', {}, true);
+                console.log("end add_node");
                 if (!!node) {
                     _jm.select_node(nodeid);
                     _jm.begin_edit(nodeid);
@@ -2804,9 +2817,10 @@
         },
         handle_addbrother: function (_jm, e) {
             var selected_node = _jm.get_selected_node();
-            if (!!selected_node && !selected_node.isroot) {
+            if (!!selected_node && !selected_node.isroot && !selected_node.parent.isroot) {
                 var nodeid = jm.util.uuid.newid();
-                var node = _jm.insert_node_after(selected_node, nodeid, 'New Node');
+                // TODO: 30.04.2019 Fix this unused parameters
+                var node = _jm.insert_node_after(selected_node, nodeid, 'New Node', {}, -1, '', true, true);
                 if (!!node) {
                     _jm.select_node(nodeid);
                     _jm.begin_edit(nodeid);
@@ -2815,13 +2829,13 @@
         },
         handle_editnode: function (_jm, e) {
             var selected_node = _jm.get_selected_node();
-            if (!!selected_node) {
+            if (!!selected_node && selected_node.enabled) {
                 _jm.begin_edit(selected_node);
             }
         },
         handle_delnode: function (_jm, e) {
             var selected_node = _jm.get_selected_node();
-            if (!!selected_node && !selected_node.isroot) {
+            if (!!selected_node && !selected_node.isroot && selected_node.enabled) {
                 _jm.select_node(selected_node.parent);
                 _jm.remove_node(selected_node);
             }
