@@ -2806,9 +2806,7 @@
             if (!!selected_node && !selected_node.isroot) {  // not allow to create a child at leve2
                 var nodeid = jm.util.uuid.newid();
                 // TODO: 30.04.2019 Fix this unused parameters
-                console.log("start add_node");
                 var node = _jm.add_node(selected_node, nodeid, 'New item', {}, true);
-                console.log("end add_node");
                 if (!!node) {
                     _jm.select_node(nodeid);
                     _jm.begin_edit(nodeid);

@@ -186,7 +186,7 @@
 
         lookup_close_node: function () {
             var node_data = this._lookup_close_node();
-            if (!!node_data) {
+            if (!!node_data && !node_data.node.isroot) {
                 this._magnet_shadow(node_data);
                 this.target_node = node_data.node;
                 this.target_direct = node_data.direction;
@@ -233,7 +233,7 @@
             var nodeid = jview.get_binded_nodeid(el);
             if (!!nodeid) {
                 var node = this.jm.get_node(nodeid);
-                if (!node.isroot) {
+                if (!node.isroot && node.enabled) {
                     this.reset_shadow(el);
                     this.active_node = node;
                     this.offset_x = (e.clientX || e.touches[0].clientX) - el.offsetLeft;
