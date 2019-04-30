@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>jsMind</title>
+    <link type="text/css" rel="stylesheet" href="../style/jsmind.css" />
+    <style type="text/css">
+        
+        #jsmind_container{
+            width: 1000px;
+            height: 600px;
+            border:solid 1px #ccc;
+            /*background:#f4f4f4;*/
+            background:#f4f4f4;
+        }
+    </style>
+</head>
+<body>
+<div id="jsmind_container"></div>
+<script type="text/javascript" src="../js/jsmind.js"></script>
+<script type="text/javascript" src="../js/jsmind.draggable.js"></script>
+<script type="text/javascript">
+    function load_jsmind(){
+        var mind = {
+            "meta":{
+                "name":"demo",
+                "author":"hizzgdev@163.com",
+                "version":"0.2",
+            },
+            "format":"node_array",
+            "data":[
+                {"id":"root", "isroot":true, "topic":"Odhad", enabled: false},
+
+                {"id":"0", "parentid":"root", "topic":"Analysis", enabled: false},
+                {"id":"0_0", "parentid":"0", "topic":"Analysis 1"},
+                {"id":"0_1", "parentid":"0", "topic":"Analysis 2"},
+                {"id":"0_2", "parentid":"0", "topic":"Analysis 3"},
+                {"id":"0_3", "parentid":"0", "topic":"Analysis 4"},
+
+                {"id":"1", "parentid":"root", "topic":"Design", enabled: false},
+                {"id":"1_0", "parentid":"1", "topic":"Design 1"},
+                {"id":"1_1", "parentid":"1", "topic":"Design 2",},
+
+                {"id":"2", "parentid":"root", "topic":"Implementation", enabled: false},
+                {"id":"2_0", "parentid":"2", "topic":"Implementation 1"},
+            ]
+        };
+        var options = {
+            container:'jsmind_container',
+            editable:true,
+            theme:'primary'
+        }
+        var jm = jsMind.show(options,mind);
+        // jm.add_node("sub2","sub23", "new node", {"background-color":"red"});
+        // jm.set_node_color('sub21', 'green', '#ccc');
+
+        return jm;
+    }
+
+    const jm = load_jsmind();
+
+    const container = document.getElementById("jsmind_container");
+    container.addEventListener('addNode', function (event) {
+      console.log("Add node it!");
+      console.log(event.detail);
+    });
+
+    container.addEventListener('editNode', function (event) {
+      console.log("Edit node!");
+      console.log(event.detail);
+    });
+
+    container.addEventListener('removeNode', function (event) {
+      console.log("Remove node!");
+      console.log(event.detail);
+    });
+
+    container.addEventListener('selectNode', function (event) {
+      console.log("Select node!");
+      console.log(event.detail);
+    });
+
+    container.addEventListener('updateNode', function (event) {
+      console.log("Update node!");
+      console.log(event.detail);
+    });
+
+
+</script>
+</body>
+</html>

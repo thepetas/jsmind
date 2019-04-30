@@ -2807,7 +2807,7 @@
                 var nodeid = jm.util.uuid.newid();
                 // TODO: 30.04.2019 Fix this unused parameters
                 console.log("start add_node");
-                var node = _jm.add_node(selected_node, nodeid, 'New Node', {}, true);
+                var node = _jm.add_node(selected_node, nodeid, 'New item', {}, true);
                 console.log("end add_node");
                 if (!!node) {
                     _jm.select_node(nodeid);
@@ -2820,7 +2820,7 @@
             if (!!selected_node && !selected_node.isroot && !selected_node.parent.isroot) {
                 var nodeid = jm.util.uuid.newid();
                 // TODO: 30.04.2019 Fix this unused parameters
-                var node = _jm.insert_node_after(selected_node, nodeid, 'New Node', {}, -1, '', true, true);
+                var node = _jm.insert_node_after(selected_node, nodeid, 'New item', {}, -1, '', true, true);
                 if (!!node) {
                     _jm.select_node(nodeid);
                     _jm.begin_edit(nodeid);
