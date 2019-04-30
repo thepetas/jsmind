@@ -55,6 +55,9 @@
         mode: 'full',     // full or side
         support_html: true,
 
+        lang: {
+            newItem: 'New item'
+        },
         view: {
             hmargin: 100,
             vmargin: 50,
@@ -1112,7 +1115,7 @@
             this.data = new jm.data_provider(this);
             this.layout = new jm.layout_provider(this, opts_layout);
             this.view = new jm.view_provider(this, opts_view);
-            this.shortcut = new jm.shortcut_provider(this, opts.shortcut);
+            this.shortcut = new jm.shortcut_provider(this, opts);
 
             this.data.init();
             this.layout.init();
@@ -2756,10 +2759,11 @@
     // shortcut provider
     jm.shortcut_provider = function (jm, options) {
         this.jm = jm;
-        this.opts = options;
-        this.mapping = options.mapping;
-        this.handles = options.handles;
+        this.opts = options.shortcut;
+        this.mapping = options.shortcut.mapping;
+        this.handles = options.shortcut.handles;
         this._mapping = {};
+        this.lang = options.lang;
     };
 
     jm.shortcut_provider.prototype = {
@@ -2806,7 +2810,7 @@
             if (!!selected_node && !selected_node.isroot) {  // not allow to create a child at leve2
                 var nodeid = jm.util.uuid.newid();
                 // TODO: 30.04.2019 Fix this unused parameters
-                var node = _jm.add_node(selected_node, nodeid, 'New item', {}, true);
+                var node = _jm.add_node(selected_node, nodeid, this.lang.newItem, {}, true);
                 if (!!node) {
                     _jm.select_node(nodeid);
                     _jm.begin_edit(nodeid);
@@ -2818,7 +2822,7 @@
             if (!!selected_node && !selected_node.isroot && !selected_node.parent.isroot) {
                 var nodeid = jm.util.uuid.newid();
                 // TODO: 30.04.2019 Fix this unused parameters
-                var node = _jm.insert_node_after(selected_node, nodeid, 'New item', {}, -1, '', true, true);
+                var node = _jm.insert_node_after(selected_node, nodeid, this.lang.newItem, {}, -1, '', true, true);
                 if (!!node) {
                     _jm.select_node(nodeid);
                     _jm.begin_edit(nodeid);
